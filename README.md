@@ -1,1 +1,1 @@
-# GN.Blazored.IndexedDB
+# GN.Blazor.SharedIndexedDB
