@@ -1,0 +1,1 @@
+# GN.Blazored.IndexedDB
