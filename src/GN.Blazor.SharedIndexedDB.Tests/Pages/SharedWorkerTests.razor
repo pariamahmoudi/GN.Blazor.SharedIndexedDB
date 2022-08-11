@@ -1,0 +1,12 @@
+﻿@page "/sharedworkertests"
+
+<h3>SharedWorker Tests</h3>
+
+<button class="btn btn-outline-warning" @onclick="ClearLog">Clear Log</button>
+<button class="btn btn-primary" @onclick="LoadServiceWorker">Load</button>
+<button class="btn btn-primary" @onclick="CreateDatabase">Create Database</button>
+<button class="btn btn-primary" @onclick="Play">Play</button>
+<button class="btn btn-primary" @onclick="GetStatus">GetStatus</button>
+
+
+<pre class="log">@_log.ToString()</pre>

@@ -1,0 +1,11 @@
+﻿@page "/messagebustests"
+
+<h3>MessageBus Tests</h3>
+
+<button class="btn btn-warning" @onclick="ClearLog">Clear Log</button>
+<button class="btn btn-primary" @onclick="Publish">Publish</button>
+<button class="btn btn-primary" @onclick="Request">Request</button>
+<button class="btn btn-primary" @onclick="CreateStore">Create Store</button>
+<button class="btn btn-primary" @onclick="StoreCRUD">Store CRUD</button>
+
+<pre class="log">@_log.ToString()</pre>

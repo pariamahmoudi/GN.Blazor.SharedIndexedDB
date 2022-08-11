@@ -1,0 +1,13 @@
+﻿@inherits TestFixture
+@page "/indexeddbtests"
+
+<h3>DB Tests</h3>
+
+<button class="btn btn-warning" @onclick="ClearLog">Clear Log</button>
+<button class="btn btn-primary" @onclick="CreateStore">Create Store </button>
+<button class="btn btn-primary" @onclick="DeleteDatabase">Delete Database</button>
+<button class="btn btn-primary" @onclick="Put">Bulk Insert</button>
+<button class="btn btn-primary" @onclick="Linq">Linq</button>
+<button class="btn btn-primary" @onclick="StoreEvents">Store Events</button>
+
+<pre class="log">@_log.ToString()</pre>

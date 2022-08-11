@@ -1,0 +1,12 @@
+*.DS_Store
+
+.vs/
+.idea/
+*.user
+*.suo
+**/node_modules
+*.litedb
+
+
+[Oo]bj/
+[Bb]in/

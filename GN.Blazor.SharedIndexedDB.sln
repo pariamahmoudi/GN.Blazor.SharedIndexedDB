@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GN.Blazor.SharedIndexedDB", "src\GN.Blazor.SharedIndexedDB\GN.Blazor.SharedIndexedDB.csproj", "{C422E93A-858A-49D8-85BB-0225F4A99AED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GN.Blazor.SharedIndexedDB.Tests", "src\GN.Blazor.SharedIndexedDB.Tests\GN.Blazor.SharedIndexedDB.Tests.csproj", "{23808553-C4A5-4491-8CA4-291F6D126E30}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C422E93A-858A-49D8-85BB-0225F4A99AED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C422E93A-858A-49D8-85BB-0225F4A99AED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C422E93A-858A-49D8-85BB-0225F4A99AED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C422E93A-858A-49D8-85BB-0225F4A99AED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23808553-C4A5-4491-8CA4-291F6D126E30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23808553-C4A5-4491-8CA4-291F6D126E30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23808553-C4A5-4491-8CA4-291F6D126E30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23808553-C4A5-4491-8CA4-291F6D126E30}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {803D60FE-B170-4970-A9C8-2D49D70850F5}
+	EndGlobalSection
+EndGlobal
