@@ -25,6 +25,7 @@ namespace GN.Blazor.SharedIndexedDB.Services
         Task<long> Count();
         Task<IEnumerable<T>> FetchAll(Action<IQueryBuilder<T>> query=null);
         IAsyncQueryable<T> GetQueryable();
+        Task<T> GetByID(string id);
 
     }
 }

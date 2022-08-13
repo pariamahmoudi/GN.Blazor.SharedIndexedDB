@@ -85,6 +85,24 @@ namespace GN.Blazor.SharedIndexedDB.Services
 
         }
 
+        public async Task<T> GetByID(string id)
+        {
+            try
+            {
+
+                var res = await this.bus.CreateContext(new GetRecordByID(id, this.dbName)).Request();
+                var payload = res.GetPayload<T>();
+                return payload != null ? payload : throw new Exception("record was not found");
+
+            }
+            catch (Exception err)
+            {
+                throw new Exception($"an error occured while geting the record {id} from {this.dbName}", err.InnerException);
+            }
+
+
+        }
+
         public async Task<IEnumerable<T>> FetchAll(Action<IQueryBuilder<T>> query = null)
         {
             var msg = new StoreFetchMessage(this.dbName, this.schema);

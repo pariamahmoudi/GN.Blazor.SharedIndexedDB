@@ -280,10 +280,34 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
             Log($"Test Successfully Completed.\r\n===================");
         }
 
-        //public async Task Paria()
-        //{
-        //    var 
-        //}
+        public async Task FindByID()
+        {
+            var dbName = "parias_test_" + new Random().Next(1, 100);
+            var schema = new StoreSchema
+            {
+                StoreName = dbName,
+                PrimaryKey = new IndexData("guid")
+            };
+
+            var store = await
+                (await DbFactory.GetDatabase(dbName))
+                .GetStore<TestModel>(schema);
+
+            await store.Put(TestModel.GetSampleData());
+
+            var res = await store.GetByID("2");
+
+
+        }
+        public async Task DeleteById()
+        {
+            var context = new DeleteRecordByID("id");
+            var res = await this.Bus.CreateContext(context).Request();
+
+
+        }
+
+
 
         public async Task Linq()
         {

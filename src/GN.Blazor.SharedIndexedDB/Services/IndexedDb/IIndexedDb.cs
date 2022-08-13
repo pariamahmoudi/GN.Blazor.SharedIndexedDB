@@ -12,5 +12,6 @@ namespace GN.Blazor.SharedIndexedDB.Services
         Task<IIndexedDbStore<T>> GetStore<T>(StoreSchema schema) where T : class;
         Task<IIndexedDbStore<T>> GetStore<T>(string storeName = null, Expression<Func<T, object>> idSelector = null) where T : class;
         Task<IIndexedDbStore<object>> GetStore(StoreSchema schema);
+
     }
 }

@@ -4,6 +4,7 @@ var options = {};
 // #region m
 // #endregion
 const subjects = {
+    "get_by_id": "get_by_id",
     'create_database': 'create_database',
     'create_store': 'create_store',
     'store_put': 'store_put',
@@ -289,6 +290,7 @@ class IndexedDbAdapter {
         bus.subscribe(subjects.store_count, this.countHandler.bind(this));
         bus.subscribe(subjects.store_fetch, this.fetchHandler.bind(this));
         bus.subscribe(subjects.get_schema, this.getDatabaseSchemaHandler.bind(this));
+        bus.subscribe(subjects.get_by_id, this.getRecordByIDhandler.bind(this));
         bus.subscribe('play', this.play.bind(this));
     }
     get_db_name_error(dbName) {
@@ -399,6 +401,18 @@ class IndexedDbAdapter {
                 break;
         }
         return result;
+    }
+    async getRecordByIDhandler(context) {
+        var msg = context.message.getPayload();
+        if (msg) {
+            const db = await this.getDatabase(msg.dbname);
+            return this.withStore(msg.dbname, msg.schema.storeName, 'readonly', os => {
+                return new Promise((resolve, reject) => {
+                    var res = os.store.get(msg.id).result;
+                    res ? resolve(res) : reject("error while retrieving record");
+                });
+            });
+        }
     }
     async fetch(query) {
         //const os = await this.getObjectStore(query.dbName, query.schema.storeName, 'readonly');

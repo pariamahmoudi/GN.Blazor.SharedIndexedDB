@@ -8,6 +8,7 @@ var options: IShareWorkerOptions = {};
 // #endregion
 
 const subjects = {
+    "get_by_id": "get_by_id",
     'create_database': 'create_database',
     'create_store': 'create_store',
     'store_put': 'store_put',
@@ -227,7 +228,7 @@ class Bus {
     }
     createMessage(subject: string, payload: unknown): MessageContext {
 
-        return new MessageContext(new Message(subject , payload), this);
+        return new MessageContext(new Message(subject, payload), this);
     }
     publish(message: Message, scope: Scope = 'auto') {
         if (message.isReply() && message.replyTo != null) {
@@ -304,6 +305,11 @@ interface ISchema {
 interface IDatabaseSchema {
     dbName: string,
     stores: ISchema[];
+}
+interface getRecordByIDPayload {
+    id: string
+    dbname: string
+    schema: ISchema;
 }
 interface IFilter {
     operator: string;
@@ -394,6 +400,7 @@ class IndexedDbAdapter {
         bus.subscribe(subjects.store_count, this.countHandler.bind(this));
         bus.subscribe(subjects.store_fetch, this.fetchHandler.bind(this));
         bus.subscribe(subjects.get_schema, this.getDatabaseSchemaHandler.bind(this));
+        bus.subscribe(subjects.get_by_id, this.getRecordByIDhandler.bind(this))
 
         bus.subscribe('play', this.play.bind(this));
     }
@@ -516,6 +523,19 @@ class IndexedDbAdapter {
         }
         return result;
 
+    }
+    async getRecordByIDhandler(context: MessageContext) {
+        var msg = context.message.getPayload<getRecordByIDPayload>();
+        if (msg) {
+
+            const db = await this.getDatabase(msg.dbname);
+            return this.withStore<object>(msg.dbname, msg.schema.storeName, 'readonly', os => {
+                return new Promise<object>((resolve, reject) => {
+                    var res = os.store.get(msg.id).result;
+                    res ? resolve(res) : reject("error while retrieving record")
+                })
+            })
+        }
     }
     async fetch(query: fetchPayload): Promise<fetchResultPayload> {
         //const os = await this.getObjectStore(query.dbName, query.schema.storeName, 'readonly');
