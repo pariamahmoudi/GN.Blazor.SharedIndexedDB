@@ -14,5 +14,6 @@
         public static string Error = "error";
         public static string DeleteById = "delete_by_id";
         public static string GetRecordByID = "get_by_id";
+        public static string DeleteWithExpression = "delete_by_expression";
     }
 }

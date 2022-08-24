@@ -8,7 +8,9 @@ var options: IShareWorkerOptions = {};
 // #endregion
 
 const subjects = {
+    "delete_by_expression": "delete_by_expression",
     "get_by_id": "get_by_id",
+    "delete_by_id": "delete_by_id",
     'create_database': 'create_database',
     'create_store': 'create_store',
     'store_put': 'store_put',
@@ -306,9 +308,14 @@ interface IDatabaseSchema {
     dbName: string,
     stores: ISchema[];
 }
+interface IDeleteRecordWithFilter {
+    filter: IFilter,
+    schema: ISchema,
+    dbName: string
+}
 interface getRecordByIDPayload {
     id: string
-    dbname: string
+    dbName: string
     schema: ISchema;
 }
 interface IFilter {
@@ -349,7 +356,15 @@ interface countPayload {
     schema: ISchema;
     dbName: string;
 }
+interface deleteRecordByIDPayload {
+    id: string
+    dbName: string
+    schema: ISchema;
+}
+interface deleteRecordByIDResult {
+    success: boolean
 
+}
 
 function replay(ctx: any, next: (ctx: any) => Promise<unknown> | null) {
 
@@ -401,7 +416,8 @@ class IndexedDbAdapter {
         bus.subscribe(subjects.store_fetch, this.fetchHandler.bind(this));
         bus.subscribe(subjects.get_schema, this.getDatabaseSchemaHandler.bind(this));
         bus.subscribe(subjects.get_by_id, this.getRecordByIDhandler.bind(this))
-
+        bus.subscribe(subjects.delete_by_id, this.deleteRecordByIDHandler.bind(this))
+        bus.subscribe(subjects.delete_by_expression, this.deleteRecordWithFilter.bind(this))
         bus.subscribe('play', this.play.bind(this));
     }
     get_db_name_error(dbName: string) {
@@ -431,6 +447,9 @@ class IndexedDbAdapter {
             }
         })
     }
+
+
+
     async withStore<T>(dbName: string, storeName: string, mode: IDBTransactionMode, action: (os: ObjectStore) => Promise<T>) {
         const os = await this.getObjectStore(dbName, storeName, mode);
         const res = await action(os);
@@ -468,6 +487,59 @@ class IndexedDbAdapter {
 
     }
 
+    async deleteRecordWithFilter(context: MessageContext) {
+
+        var msg = context.message.getPayload<IDeleteRecordWithFilter>();
+
+        return this.withStore<object>(msg.dbName, msg.schema.storeName, 'readwrite', os => {
+            return new Promise<object>((resolve, reject) => {
+                var resultPayload: deleteRecordByIDResult = { success: false };
+                const cursor_req = os.store.openCursor();
+                cursor_req.onerror = err => {
+
+                    reject((err as object as DOMException).message);
+                    context.reply(resultPayload)
+
+                }
+                cursor_req.onsuccess = ev => {
+                    const cursor = cursor_req.result;
+                    if (cursor) {
+                        if (msg.filter && cursor.value && this.matchFilter(cursor.value, msg.filter)) {
+                            os.store.delete(cursor.key);
+                            resultPayload.success = true;
+                            resolve(resultPayload)
+                            context.reply(resultPayload)
+                        }
+                        cursor.continue();
+                    }
+                }
+            })
+        })
+
+
+    }
+
+    async deleteRecordByIDHandler(context: MessageContext) {
+        var msg = context.message.getPayload<deleteRecordByIDPayload>();
+        if (msg) {
+            return this.withStore<object>(msg.dbName, msg.schema.storeName, 'readwrite', os => {
+                return new Promise<object>((resolve, reject) => {
+                    var res = os.store.delete(msg.id);
+                    var resultPayload: deleteRecordByIDResult = { success: false };
+                    res.onsuccess = ev => {
+                        resultPayload.success = true
+                        resolve(resultPayload);
+                        context.reply(resultPayload);
+                    }
+                    res.onerror = ev => {
+
+                        reject("error while deleting record" + res.error?.message.toString())
+                        context.error("error while deleting record" + res.error?.message.toString())
+                    }
+                })
+            })
+        }
+    }
 
     matchFilter(val: any, filter: IFilter): any {
         var result: any = false;
@@ -527,12 +599,19 @@ class IndexedDbAdapter {
     async getRecordByIDhandler(context: MessageContext) {
         var msg = context.message.getPayload<getRecordByIDPayload>();
         if (msg) {
-
-            const db = await this.getDatabase(msg.dbname);
-            return this.withStore<object>(msg.dbname, msg.schema.storeName, 'readonly', os => {
+            return this.withStore<object>(msg.dbName, msg.schema.storeName, 'readonly', os => {
                 return new Promise<object>((resolve, reject) => {
-                    var res = os.store.get(msg.id).result;
-                    res ? resolve(res) : reject("error while retrieving record")
+                    var res = os.store.get(msg.id);
+                    res.onsuccess = ev => {
+
+                        resolve(res.result);
+                        context.reply(res.result);
+                    }
+                    res.onerror = ev => {
+
+                        reject("error while retrieving record" + res.error?.message.toString())
+                        context.error("error while retrieving record" + res.error?.message.toString())
+                    }
                 })
             })
         }

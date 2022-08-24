@@ -1,7 +1,8 @@
-﻿using System;
+﻿using GN.Blazor.SharedIndexedDB.Models;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GN.Blazor.SharedIndexedDB.Tests.Models
 {
@@ -9,17 +10,17 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Models
 
     public class TestModel
     {
-        [Key()]
-        public int Guid { get; set; }
+        [Key]
+        public Guid GuID { get; set; }
         public int Number { get; set; }
-        public static TestModel[] GetSampleData()
+        public static TestModel[] GetSampleData(int count = 5)
         {
             var data = new List<TestModel>();
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < count; i++)
             {
                 data.Add(new TestModel
                 {
-                    Guid = i,
+                    GuID = Guid.NewGuid(),
                     Number = i,
                 });
             }

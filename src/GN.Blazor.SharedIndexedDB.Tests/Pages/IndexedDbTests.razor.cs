@@ -265,14 +265,6 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
             var fff = items_fetched.ToArray()[0];
 
 
-
-
-
-
-
-
-
-
             await Task.Delay(1000);
 
             await DbFactory.DeleteDatabase(dbName).TimeoutAfter(2000, default, false);
@@ -280,33 +272,110 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
             Log($"Test Successfully Completed.\r\n===================");
         }
 
+        //Items can be fetched by their IDs
         public async Task FindByID()
         {
-            var dbName = "parias_test_" + new Random().Next(1, 100);
-            var schema = new StoreSchema
-            {
-                StoreName = dbName,
-                PrimaryKey = new IndexData("guid")
-            };
-
+            //Creating test environment
+            var dbName = "ID_Fetch_Test" + new Random().Next(1, 100);
             var store = await
                 (await DbFactory.GetDatabase(dbName))
-                .GetStore<TestModel>(schema);
+                .GetStore<TestModel>();
+            var itemCount = 10;
+            var data = TestModel.GetSampleData(itemCount);
+            await store.Put(data);
+            Assert(await DbFactory.DatabaseExists(dbName), "DatabaseExists should return true");
+            Assert((await store.Count()) == itemCount, "Data is not what was expected to continue with the test");
 
-            await store.Put(TestModel.GetSampleData());
+            //Get Item
+            var item = data[0];
+            var res = await store.GetByID(item.GuID.ToString());
+            Assert(res.GuID.ToString() == item.GuID.ToString(), "Item fetched incorrectly!");
+            Assert(res.Number == item.Number, "Just Double Cheking, Item is undoubtedly incorrect!");
+            Log("Test Passed, Item was successfully fetched");
+            Log($"Expected = {item.GuID}");
+            Log($"Result = {res.GuID}");
 
-            var res = await store.GetByID("2");
+
+            //Get nonexistent item should return null
+            var tempItem = new TestModel { GuID = Guid.NewGuid(), Number = 55 };
+            var nullItem = await store.GetByID(tempItem.GuID.ToString());
+            Assert(nullItem == null, "Item should not have been found!");
+            Log("Test Passed, Nonexistent ItemGet returned null");
 
 
+            //Test CleanUp
+            await DbFactory.DeleteDatabase(dbName);
+            var exists = await DbFactory.DatabaseExists(dbName);
+            Assert(!exists, "DatabaseExists should NOT return TRUE!.");
+            Log($"Test Successfully Completed.\r\n=============================");
         }
+        //Items can be deleted by their IDs
         public async Task DeleteById()
         {
-            var context = new DeleteRecordByID("id");
-            var res = await this.Bus.CreateContext(context).Request();
+            //Creating test environment
+            var dbName = "ID_Delete_Test" + new Random().Next(1, 100);
+            var store = await
+                (await DbFactory.GetDatabase(dbName))
+                .GetStore<TestModel>();
+            var itemCount = 10;
+            var data = TestModel.GetSampleData(itemCount);
+            await store.Put(data);
+            Assert(await DbFactory.DatabaseExists(dbName), "DatabaseExists should return true");
+            Assert((await store.Count()) == itemCount, "Data is not what was expected to continue with the test");
 
+            //Delete item
+            var item = data[0];
+            var res = await store.DeleteByID(item.GuID.ToString());
+            var storeCount = await store.Count();
+            Assert(res, "Success of the deletation should have been true");
+            Assert((await store.GetByID(item.GuID.ToString()) == null), "GetItem should have returned null!");
+            Assert(storeCount == itemCount - 1, "store items haven't been reduced!");
+            Log("Test Passed, Item was successfully deleted");
+            Log($"Expected length = {itemCount - 1}");
+            Log($"Result = {storeCount}");
+
+
+            //Test CleanUp
+            await DbFactory.DeleteDatabase(dbName);
+            var exists = await DbFactory.DatabaseExists(dbName);
+            Assert(!exists, "DatabaseExists should NOT return TRUE!.");
+            Log($"Test Successfully Completed.\r\n=============================");
 
         }
+        //Items can be deleted with expression
+        public async Task DeleteExpression()
+        {
+            //Creating test environment
+            var dbName = "Delete_Expression_Test" + new Random().Next(1, 100);
+            var store = await
+                (await DbFactory.GetDatabase(dbName))
+                .GetStore<TestModel>();
+            var itemCount = 10;
+            var data = TestModel.GetSampleData(itemCount);
+            await store.Put(data);
+            Assert(await DbFactory.DatabaseExists(dbName), "DatabaseExists should return true");
+            Assert((await store.Count()) == itemCount, "Data is not what was expected to continue with the test");
 
+            //delete
+            var res = await store.DeleteWhere(x => x.Number < 5);
+            var t1 = data.FirstOrDefault(x => x.Number == 4);
+            var t2 = data.FirstOrDefault(x => x.Number == 5);
+            var storeCount = await store.Count();
+            Assert(res, "Success of the deletation should have been true");
+            Assert((await store.GetByID(t1.GuID.ToString()) == null), "GetItem should have returned null!");
+            Assert((await store.GetByID(t2.GuID.ToString())).GuID == t2.GuID, "GetItem should not have returned null!");
+            Assert(storeCount == itemCount - 5, "store items haven't been reduced!");
+            Log("Test Passed, Item was successfully deleted");
+            Log($"Expected length = {itemCount - 5}");
+            Log($"Result = {storeCount}");
+
+
+            //Test CleanUp
+            await DbFactory.DeleteDatabase(dbName);
+            var exists = await DbFactory.DatabaseExists(dbName);
+            Assert(!exists, "DatabaseExists should NOT return TRUE!.");
+            Log($"Test Successfully Completed.\r\n=============================");
+        }
 
 
         public async Task Linq()

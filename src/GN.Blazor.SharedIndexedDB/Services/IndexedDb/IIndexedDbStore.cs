@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GN.Blazor.SharedIndexedDB.Models;
 using GN.Blazor.SharedIndexedDB.Models.Messages;
@@ -26,6 +27,7 @@ namespace GN.Blazor.SharedIndexedDB.Services
         Task<IEnumerable<T>> FetchAll(Action<IQueryBuilder<T>> query=null);
         IAsyncQueryable<T> GetQueryable();
         Task<T> GetByID(string id);
-
+        Task<bool> DeleteByID(string id);
+        Task<bool> DeleteWhere(Expression<Predicate<T>> expression);
     }
 }

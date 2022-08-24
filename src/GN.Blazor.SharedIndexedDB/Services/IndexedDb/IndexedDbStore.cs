@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using GN.Blazor.SharedIndexedDB.Services.LinqQuery;
 using System.Reflection;
+using System.Linq.Expressions;
+using GN.Blazor.SharedIndexedDB.Services.LinqQuery.Vistitors;
 
 namespace GN.Blazor.SharedIndexedDB.Services
 {
@@ -89,11 +91,9 @@ namespace GN.Blazor.SharedIndexedDB.Services
         {
             try
             {
-
-                var res = await this.bus.CreateContext(new GetRecordByID(id, this.dbName)).Request();
+                var res = await this.bus.CreateContext(new GetRecordByID(id, this.dbName, this.Schema)).Request();
                 var payload = res.GetPayload<T>();
-                return payload != null ? payload : throw new Exception("record was not found");
-
+                return payload;
             }
             catch (Exception err)
             {
@@ -127,6 +127,24 @@ namespace GN.Blazor.SharedIndexedDB.Services
         {
             await this.bus.CreateContext(new StorePutMessage(this.dbName, this.schema, items))
                 .Request();
+        }
+
+        public async Task<bool> DeleteByID(string id)
+        {
+            var m = new DeleteRecordByID(id, this.dbName, this.schema);
+            var res = await this.bus.CreateContext(m).Request();
+            var payload = res?.GetPayload<DeleteResult>();
+            return payload.Success;
+        }
+        
+        public async Task<bool> DeleteWhere(Expression<Predicate<T>> expression)
+        {
+            var evaluator = new FilterEvaluator();
+            var filter = evaluator.Evaluate(expression);
+            var message = new DeleteRecordWithFilter(filter, this.dbName, this.schema);
+            var res = await this.bus.CreateContext(message).Request();
+            var payload = res?.GetPayload<DeleteResult>();
+            return payload.Success;
         }
     }
 }

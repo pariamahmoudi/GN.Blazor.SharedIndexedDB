@@ -6,26 +6,30 @@ using System.Threading.Tasks;
 
 namespace GN.Blazor.SharedIndexedDB.Models.Messages
 {
-    public class DeleteRecordByID : Message<string>
+    public class DeleteRecordByID : Message<DeleteRecordByIDPayload>
     {
-        public DeleteRecordByID(string ID) : base(Subjects.DeleteById, ID)
+        public DeleteRecordByID(string ID, string dbName, StoreSchema schema) : base(Subjects.DeleteById, new DeleteRecordByIDPayload
         {
-
-        }
-    }
-    public class GetRecordByIdPayload
-    {
-        public string ID { get; set; }
-        public string DBName { get; set; }
-    }
-    public class GetRecordByID : Message<GetRecordByIdPayload>
-    {
-        public GetRecordByID(string ID, string DBName) : base(Subjects.GetRecordByID, new GetRecordByIdPayload
-        {
-            DBName = DBName,
-            ID = ID
+            ID = ID,
+            DBName = dbName,
+            Schema = schema
         })
         { }
     }
+
+    public class DeleteRecordByIDPayload
+    {
+        public string ID { get; set; }
+        public string DBName { get; set; }
+        public StoreSchema Schema { get; set; }
+    }
+
+    public class DeleteResult
+    {
+        public bool Success { get; set; }
+    }
+
+
+  
 
 }

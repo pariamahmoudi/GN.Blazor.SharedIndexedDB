@@ -4,7 +4,9 @@ var options = {};
 // #region m
 // #endregion
 const subjects = {
+    "delete_by_expression": "delete_by_expression",
     "get_by_id": "get_by_id",
+    "delete_by_id": "delete_by_id",
     'create_database': 'create_database',
     'create_store': 'create_store',
     'store_put': 'store_put',
@@ -291,6 +293,8 @@ class IndexedDbAdapter {
         bus.subscribe(subjects.store_fetch, this.fetchHandler.bind(this));
         bus.subscribe(subjects.get_schema, this.getDatabaseSchemaHandler.bind(this));
         bus.subscribe(subjects.get_by_id, this.getRecordByIDhandler.bind(this));
+        bus.subscribe(subjects.delete_by_id, this.deleteRecordByIDHandler.bind(this));
+        bus.subscribe(subjects.delete_by_expression, this.deleteRecordWithFilter.bind(this));
         bus.subscribe('play', this.play.bind(this));
     }
     get_db_name_error(dbName) {
@@ -350,6 +354,51 @@ class IndexedDbAdapter {
             };
         });
     }
+    async deleteRecordWithFilter(context) {
+        var msg = context.message.getPayload();
+        return this.withStore(msg.dbName, msg.schema.storeName, 'readwrite', os => {
+            return new Promise((resolve, reject) => {
+                var resultPayload = { success: false };
+                const cursor_req = os.store.openCursor();
+                cursor_req.onerror = err => {
+                    reject(err.message);
+                    context.reply(resultPayload);
+                };
+                cursor_req.onsuccess = ev => {
+                    const cursor = cursor_req.result;
+                    if (cursor) {
+                        if (msg.filter && cursor.value && this.matchFilter(cursor.value, msg.filter)) {
+                            os.store.delete(cursor.key);
+                            resultPayload.success = true;
+                            resolve(resultPayload);
+                            context.reply(resultPayload);
+                        }
+                        cursor.continue();
+                    }
+                };
+            });
+        });
+    }
+    async deleteRecordByIDHandler(context) {
+        var msg = context.message.getPayload();
+        if (msg) {
+            return this.withStore(msg.dbName, msg.schema.storeName, 'readwrite', os => {
+                return new Promise((resolve, reject) => {
+                    var res = os.store.delete(msg.id);
+                    var resultPayload = { success: false };
+                    res.onsuccess = ev => {
+                        resultPayload.success = true;
+                        resolve(resultPayload);
+                        context.reply(resultPayload);
+                    };
+                    res.onerror = ev => {
+                        reject("error while deleting record" + res.error?.message.toString());
+                        context.error("error while deleting record" + res.error?.message.toString());
+                    };
+                });
+            });
+        }
+    }
     matchFilter(val, filter) {
         var result = false;
         switch (filter.operator) {
@@ -405,11 +454,17 @@ class IndexedDbAdapter {
     async getRecordByIDhandler(context) {
         var msg = context.message.getPayload();
         if (msg) {
-            const db = await this.getDatabase(msg.dbname);
-            return this.withStore(msg.dbname, msg.schema.storeName, 'readonly', os => {
+            return this.withStore(msg.dbName, msg.schema.storeName, 'readonly', os => {
                 return new Promise((resolve, reject) => {
-                    var res = os.store.get(msg.id).result;
-                    res ? resolve(res) : reject("error while retrieving record");
+                    var res = os.store.get(msg.id);
+                    res.onsuccess = ev => {
+                        resolve(res.result);
+                        context.reply(res.result);
+                    };
+                    res.onerror = ev => {
+                        reject("error while retrieving record" + res.error?.message.toString());
+                        context.error("error while retrieving record" + res.error?.message.toString());
+                    };
                 });
             });
         }
