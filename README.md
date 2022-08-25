@@ -183,8 +183,10 @@ A detailed explanation of how you can achieve that is being documented and will 
 							
 This is a free open-source project and does ot require a license to use.
 Any suggestions, questions, Issues and contributions are welcomed in advance.
-
 In case of usage in your project, a credit would be appriciated.
 
+							
+This project is developed under the direct supervision of @BabakMahmoudi
+							
 
 Happy codding!
