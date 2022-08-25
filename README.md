@@ -22,12 +22,12 @@ Add
 ```c#
 using GN.Blazor.SharedIndexedDB.IndexedDB.
 public static async Task Main(string[] args)
-        {
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.Services.AddShilaFeatures();
-            //codes removed for brevity 
-            await builder.Build().RunAsync();
-        }
+{
+	var builder = WebAssemblyHostBuilder.CreateDefault(args);
+	builder.Services.AddShilaFeatures();
+	//codes removed for brevity 
+	await builder.Build().RunAsync();
+}
 ```
 To your program.cs file.
 The above code is copied from blazor server program.cs file.If you are using other or older versions, 
@@ -68,7 +68,8 @@ its key name in the store or whether or not its value is unique to every record 
 
 To explicitly define your schema use 
 ```c#
-StoreSchema schema = new StoreSchema { 
+StoreSchema schema = new StoreSchema 
+{ 
     StoreName = "storename" , 
     PrimaryKey = new IndexData { Name="id" , KeyPath = "id" , Unique= true} ,
     Indexes = [],
@@ -82,14 +83,14 @@ Give your schema the IIndexedDb.GetStore(schema) .
 You can also define your store schema by using tags in your model class
 ```c#
 [Table("your_store_name")]
-    public class TestModel
-    {
+public class TestModel
+{
         [Key]
         public Guid GuID { get; set; }
         [Index]
-        public int Number { get; set; }
+	public int Number { get; set; }
 
-    }
+}
 ```
 You can use [Key(“ID”)] and [Index(“NumberOfSomething”)] to set a different name 
 than your c# property name for your model in the store.
@@ -143,10 +144,10 @@ You can also request a LinQ **link** IAsyncQueryable<T> to run linq queries on y
 ```c#
 IAsyncQueryable<TestModel> queryable = store.GetQueryable();
 TestModel[] res = queryable
-     .Where(x=>x.Number > 5)
-     .Skip(5)
-     .Take(10)
-	   .ToArray();
+	.Where(x=>x.Number > 5)
+	.Skip(5)
+	.Take(10)
+	.ToArray();
 ```
   
 ### Delete
