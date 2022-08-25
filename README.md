@@ -186,7 +186,7 @@ Any suggestions, questions, Issues and contributions are welcomed in advance.
 In case of usage in your project, a credit would be appriciated.
 
 							
-This project is developed under the direct supervision of [BabakMahmoudi]
+This project is developed under the direct supervision of [Babak Mahmoudi](https://github.com/BabakMahmoudi)
 							
 
 Happy codding!
