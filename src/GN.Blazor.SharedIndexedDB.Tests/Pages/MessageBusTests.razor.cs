@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Components;
-using GN.Blazor.SharedIndexedDB;
-using GN.Blazor.SharedIndexedDB.Models;
-using GN.Blazor.SharedIndexedDB.Models.Messages;
-using GN.Blazor.SharedIndexedDB.Services;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GN.Blazor.SharedIndexedDB.IndexedDB;
+using GN.Blazor.SharedIndexedDB.Messaging;
+using GN.Blazor.SharedIndexedDB.Messaging.Commands;
+using Microsoft.AspNetCore.Components;
 
 namespace GN.Blazor.SharedIndexedDB.Tests.Pages
 {
@@ -50,9 +48,11 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
         }
         public async Task Request()
         {
+#pragma warning disable CS0219 // The variable 'topic' is assigned but its value is never used
             var topic = "test";
+#pragma warning restore CS0219 // The variable 'topic' is assigned but its value is never used
             var received = new List<Message>();
-            var res = await this.Bus.CreateContext(new CreateDatabaseMessage("babak"))
+            var res = await this.Bus.CreateContext(new CreateDatabase("babak"))
                 .WithScope(s => s.All().Only(Transports.SharedWorker))
                 .Request();
             Log($"Database created. {res}");
@@ -62,7 +62,7 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
             try
             {
                 var dbName = "mydatabase2";
-                var response = await this.Bus.CreateContext(new CreateStoreMessage(dbName, new StoreSchema
+                var response = await this.Bus.CreateContext(new CreateStore(dbName, new StoreSchema
                 {
                     //DbName = "mydatabase2",
                     StoreName = "mystore",
@@ -92,12 +92,12 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
                 //DbName = "ContactsDB1",
                 StoreName = "Contats",
                 PrimaryKey = new IndexData("id"),
-                Indexes = new IndexData[] { new IndexData("age","age",false) }
+                Indexes = new IndexData[] { new IndexData("age", "age", false) }
             };
             try
             {
                 var store = await this.Bus
-                    .CreateContext(new CreateStoreMessage(dbName,schema))
+                    .CreateContext(new CreateStore(dbName, schema))
                     .Request()
                     .TimeoutAfter(5000);
 
@@ -112,7 +112,7 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
                     .ToArray();
                 Log($"Store Successfully Created {store}");
                 var put_response = await this.Bus
-                    .CreateContext(new StorePutMessage(dbName, schema, items))
+                    .CreateContext(new Put(dbName, schema, items))
                     .Request()
                     .TimeoutAfter(10000);
                 Log($"Put Succeeded: {put_response}");

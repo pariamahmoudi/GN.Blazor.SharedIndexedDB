@@ -9,12 +9,12 @@ const subjects = {
     "delete_by_id": "delete_by_id",
     'create_database': 'create_database',
     'create_store': 'create_store',
-    'store_put': 'store_put',
+    'put': 'put',
     'get_schema': 'get_schema',
     'delete_database': 'delete_database',
     'database_exists': 'database_exists',
-    'store_count': 'store_count',
-    'store_fetch': 'store_fetch',
+    'count': 'count',
+    'fetch': 'fetch',
     'sharedworker_init': 'sharedworker_init',
     'sharedworker_status': 'sharedworker_status',
     'sharedworker_get_status': 'sharedworker_get_status',
@@ -288,9 +288,9 @@ class IndexedDbAdapter {
         bus.subscribe(subjects.delete_database, this.deleteDatabaseHandler.bind(this));
         bus.subscribe(subjects.database_exists, this.databaseExistsHandler.bind(this));
         bus.subscribe(subjects.create_store, this.createStoreHandler.bind(this));
-        bus.subscribe(subjects.store_put, this.putHandler.bind(this));
-        bus.subscribe(subjects.store_count, this.countHandler.bind(this));
-        bus.subscribe(subjects.store_fetch, this.fetchHandler.bind(this));
+        bus.subscribe(subjects.put, this.putHandler.bind(this));
+        bus.subscribe(subjects.count, this.countHandler.bind(this));
+        bus.subscribe(subjects.fetch, this.fetchHandler.bind(this));
         bus.subscribe(subjects.get_schema, this.getDatabaseSchemaHandler.bind(this));
         bus.subscribe(subjects.get_by_id, this.getRecordByIDhandler.bind(this));
         bus.subscribe(subjects.delete_by_id, this.deleteRecordByIDHandler.bind(this));

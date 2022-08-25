@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
-using GN.Blazor.SharedIndexedDB.Services;
 using System.Threading;
 using System.Text.Json;
 using System.Reflection;
-using GN.Blazor.SharedIndexedDB.Models;
 using System.Buffers;
+using GN.Blazor.SharedIndexedDB.Messaging;
+using GN.Blazor.SharedIndexedDB.IndexedDB;
+using GN.Blazor.SharedIndexedDB.SharedWorker;
 
 namespace GN.Blazor.SharedIndexedDB
 {
@@ -19,7 +20,6 @@ namespace GN.Blazor.SharedIndexedDB
         public static IServiceCollection AddShilaFeatures(this IServiceCollection services)
         {
             services.AddMediatR(typeof(ShilaFeaturesExtensions).Assembly);
-            services.AddTransient<IShilaDispatcher, ShilaDispatcher>();
             services.AddSingleton<ISharedWorkerAdapterFactory, SharedWorkerAdapterFactory>();
             services.AddSingleton<ISharedWorkerAdapter>(sp => sp.GetService<ISharedWorkerAdapterFactory>().CreateAdapter("SharedWorker"));
             services.AddSingleton<IIndexedDbFactory, IndexedDbFactory>();

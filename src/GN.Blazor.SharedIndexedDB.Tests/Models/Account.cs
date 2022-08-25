@@ -1,8 +1,6 @@
-﻿using GN.Blazor.SharedIndexedDB.Models;
+﻿using GN.Blazor.SharedIndexedDB.IndexedDB;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace GN.Blazor.SharedIndexedDB.Tests.Models
 {
@@ -11,7 +9,7 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Models
     {
         [Key]
         public int Id { get; set; }
-        
+
         [Index]
         public string Name { get; set; }
         public string PhoneNumber { get; set; }

@@ -1,18 +1,17 @@
-﻿using GN.Blazor.SharedIndexedDB.Models;
-//using System.ComponentModel.DataAnnotations.Schema;
+﻿using GN.Blazor.SharedIndexedDB.IndexedDB;
 
 namespace GN.Blazor.SharedIndexedDB.Tests.Pages
 {
     [Table("Persons")]
     public class PersonModel
     {
-        [Key()]
+        [Key]
         public string Id { get; set; }
-        
-        [Index()]
+
+        [Index]
         public string Name { get; set; }
-        
-        [Index()]
+
+        [Index]
         public int Age { get; set; }
     }
 }

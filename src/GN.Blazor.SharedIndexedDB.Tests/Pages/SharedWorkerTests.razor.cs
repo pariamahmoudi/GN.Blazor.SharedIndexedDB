@@ -1,21 +1,15 @@
-﻿using Microsoft.AspNetCore.Components;
-using GN.Blazor.SharedIndexedDB;
-using GN.Blazor.SharedIndexedDB.Models;
-using GN.Blazor.SharedIndexedDB.Models.Messages;
-using GN.Blazor.SharedIndexedDB.Services;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using GN.Blazor.SharedIndexedDB.Messaging;
+using GN.Blazor.SharedIndexedDB.Messaging.Commands;
+using GN.Blazor.SharedIndexedDB.SharedWorker;
+using Microsoft.AspNetCore.Components;
 
 namespace GN.Blazor.SharedIndexedDB.Tests.Pages
 {
     public partial class SharedWorkerTests
     {
-        [Inject]
-        public IShilaDispatcher dispatcher { get; set; }
         [Inject]
         public ISharedWorkerAdapter adapter { get; set; }
         private StringBuilder _log = new StringBuilder();
@@ -36,8 +30,8 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
             await Task.CompletedTask;
             //await dispatcher.Dispatch1();
             await adapter.StartServiceWorker();
-            await adapter.PostMessage(new Message<string> {Payload="hi",  Subject="hi there" });
-            
+            await adapter.PostMessage(new Message<string> { Payload = "hi", Subject = "hi there" });
+
 
         }
         public async Task CreateDatabase()
@@ -45,21 +39,21 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
             await adapter.StartServiceWorker();
             try
             {
-                var res = await adapter.Request(new CreateDatabaseMessage("testdb"));
+                var res = await adapter.Request(new CreateDatabase("testdb"));
                 Log($"Database successfully created. {res.GetPayload<string>()}");
             }
-            catch(Exception err)
+            catch (Exception err)
             {
-                
-                Log( err==null?"Unkown error occured.": $"An error occured {err?.Message}");
+
+                Log(err == null ? "Unkown error occured." : $"An error occured {err?.Message}");
             }
-            
+
 
 
         }
         public async Task GetStatus()
         {
-            var response = 
+            var response =
                 await adapter.Request(new Message("sharedworker_get_status", ""));
             Log($"SharedWorker Status:{response}");
         }
@@ -68,8 +62,9 @@ namespace GN.Blazor.SharedIndexedDB.Tests.Pages
             await adapter.StartServiceWorker();
             try
             {
-               await adapter.PostMessage(new Message<string> { 
-                   Subject="play",
+                await adapter.PostMessage(new Message<string>
+                {
+                    Subject = "play",
 
                 });
             }

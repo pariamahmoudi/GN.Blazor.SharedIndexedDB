@@ -1,18 +1,12 @@
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using GN.Blazor.SharedIndexedDB;
-using Fluxor;
-using Fluxor.DependencyInjection;
-
-namespace GN.Blazor.SharedIndexedDB.Tests
+﻿namespace GN.Blazor.SharedIndexedDB.Tests
 {
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using Fluxor;
+    using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+    using Microsoft.Extensions.DependencyInjection;
+
     public class Program
     {
         public static async Task Main(string[] args)
