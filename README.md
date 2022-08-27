@@ -30,14 +30,15 @@ public static async Task Main(string[] args)
 }
 ```
 To your program.cs file.
+
 The above code is copied from blazor server program.cs file.If you are using other or older versions, 
 you may not find it. Just keep in mind you should AddShilaFeatures() before the build of your Host.
 
 ## Create database and store
 
 Firstly you need to create the database. Databases can hold any number of stores.
-Stores are where your data is actually stored.
-To create a database there is an 
+
+To create a database use
 ```c#
 string dbName = "{your_database_name}";
 IIndexedDb dataBase = await IIndexedDbFactory.DbFactory.GetDatabase(dbName);
@@ -76,7 +77,12 @@ StoreSchema schema = new StoreSchema
 };
 ```
 Note that primary keys should be unique.
-Give your schema the IIndexedDb.GetStore(schema) .
+
+Give your schema the IIndexedDb.GetStore.
+
+```c#
+	IIndexedDb.GetStore(schema)
+```
 
 #### AttributeUsageAttribute
 
@@ -96,8 +102,12 @@ You can use [Key(“ID”)] and [Index(“NumberOfSomething”)] to set a differ
 than your c# property name for your model in the store.
 
 In this case the schema is automatically created for the store and 
-you don’t need to pass anything to the IIndexedDb.GetStore function.
-Do note that you should IIndexedDb.GetStore<TestModel>();
+you don’t need to pass anything to the IIndexedDb.GetStore function if:
+
+```c#
+	IIndexedDb.GetStore<TestModel>();
+```
+
 	
 ## Store API
 	
